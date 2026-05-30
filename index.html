@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Divisibilidad | Aritmética Álgebra</title>
+    <style>
+        :root {
+            --bg-color: #f9fafb;
+            --text-color: #333;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border-color: #e5e7eb;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1, h2 { margin-top: 0; }
+        p { margin-bottom: 1.5rem; line-height: 1.5; }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .hidden { display: none !important; }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .option-btn {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        .option-btn:hover { background-color: #f3f4f6; }
+        .status-msg { margin-top: 1rem; font-weight: bold; font-size: 0.9rem;}
+        .error { color: var(--error-color); }
+        .success { color: var(--success-color); }
+        #question-counter { font-size: 0.8rem; color: #6b7280; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="login-screen">
+    <h1>Cuestionario</h1>
+    <p>Curso: <b>Aritmética Álgebra</b><br>Tema: Divisibilidad y Propiedades</p>
+    <input type="text" id="dni-input" placeholder="Ingresa tu DNI (8 dígitos)" maxlength="8">
+    <button onclick="startQuiz()">Empezar Prueba</button>
+    <div id="login-status" class="status-msg error"></div>
+</div>
+
+<div class="container hidden" id="quiz-screen">
+    <div id="question-counter">Pregunta 1 de 10</div>
+    <h2 id="question-text" style="font-size: 1.2rem; margin-bottom: 1.5rem;">Cargando...</h2>
+    <div class="options-grid" id="options-container"></div>
+</div>
+
+<div class="container hidden" id="result-screen">
+    <h1>Resultados</h1>
+    <p id="score-text">Tu puntaje: --</p>
+    <h2 id="grade-text" style="margin-bottom: 1.5rem;">Nota: --</h2>
+    <div id="upload-status" class="status-msg">Enviando nota al sistema...</div>
+</div>
+
+<script>
+    // URL DE TU DEPLOY EN GOOGLE APPS SCRIPT
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbwvwNg-21TzKjUzdW0lnTNmbEv_S_uoMXHvPMGPhrSfWCI2YGiC-tufPRaGhzvTqpUd/exec";
+    
+    // Variables de estado
+    let dni = "";
+    let score = 0;
+    let currentQIndex = 0;
+    let quizQuestions = [];
+    const TOTAL_QUIZ_QUESTIONS = 10; // Extraeremos 10 al azar del banco de 100
+
+    // Generador del banco de 100 preguntas diferentes
+    const questionBank = [];
+    
+    // 1. Generamos 80 preguntas dinámicas sobre divisibilidad numérica
+    const divisores = [2, 3, 4, 5, 6, 9, 10, 11];
+    for(let i = 0; i < 80; i++) {
+        let div = divisores[Math.floor(Math.random() * divisores.length)];
+        let esDivisible = Math.random() > 0.5; // 50% probabilidad
+        let num;
+        
+        if (esDivisible) {
+            num = div * (Math.floor(Math.random() * 100) + 10); // Crea un múltiplo exacto
+        } else {
+            num = (div * (Math.floor(Math.random() * 100) + 10)) + (Math.floor(Math.random() * (div - 1)) + 1); // Deja residuo
+        }
+
+        questionBank.push({
+            q: `¿El número ${num} es divisible por ${div}?`,
+            options: ["Sí", "No"],
+            answer: esDivisible ? "Sí" : "No"
+        });
+    }
+
+    // 2. Agregamos 20 preguntas teóricas (Lema de Cuya, Coprimos, Propiedades)
+    const teoria = [
+        {q: "Si a|b y a|c, entonces a|(b+c)", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Si a|b, entonces a|bc para cualquier entero c", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Dos enteros consecutivos siempre son coprimos", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Si a|bc y a es coprimo con b, entonces a|c", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "a^n - b^n siempre es divisible por a - b", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "a^n + b^n siempre es divisible por a + b para todo n par", options: ["Verdadero", "Falso"], answer: "Falso"},
+        {q: "El único divisor entero positivo común de dos números coprimos es 1", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Si a|b y b|a, entonces |a| = |b|", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "0 es divisible por cualquier entero no nulo", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Cualquier entero es divisible por 0", options: ["Verdadero", "Falso"], answer: "Falso"},
+        {q: "Si a|b y b|c, entonces a|c (Transitividad)", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "¿Son 14 y 15 números coprimos?", options: ["Sí", "No"], answer: "Sí"},
+        {q: "Si a|b, entonces a^2 divide a b^2", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Tres impares consecutivos son coprimos dos a dos", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Si d divide a 'a' y a 'b', d divide a cualquier combinación lineal ax + by", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "¿Es la fracción (12n+1)/(30n+2) irreducible para todo entero positivo n?", options: ["Sí", "No"], answer: "Sí"},
+        {q: "Si ac divide a bc y c ≠ 0, entonces a divide a b", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Si a divide a b (siendo b > 0), entonces a ≤ b", options: ["Verdadero", "Falso"], answer: "Verdadero"},
+        {q: "Al sumar un múltiplo de 'a' al número 'b', altera su divisibilidad respecto a 'a'", options: ["Verdadero", "Falso"], answer: "Falso"},
+        {q: "El lema de Cuya indica propiedades de divisibilidad exclusivas para números racionales", options: ["Verdadero", "Falso"], answer: "Falso"}
+    ];
+    questionBank.push(...teoria);
+
+    // Función iniciar
+    function startQuiz() {
+        const input = document.getElementById('dni-input').value.trim();
+        const status = document.getElementById('login-status');
+        
+        if (!/^\d{8}$/.test(input)) {
+            status.textContent = "El DNI debe tener 8 números.";
+            return;
+        }
+        
+        dni = input;
+        status.textContent = "";
+        
+        // Seleccionar 10 preguntas aleatorias del banco de 100
+        quizQuestions = questionBank.sort(() => 0.5 - Math.random()).slice(0, TOTAL_QUIZ_QUESTIONS);
+        
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        renderQuestion();
+    }
+
+    // Renderizar Pregunta
+    function renderQuestion() {
+        if (currentQIndex >= TOTAL_QUIZ_QUESTIONS) {
+            finishQuiz();
+            return;
+        }
+
+        const qData = quizQuestions[currentQIndex];
+        document.getElementById('question-counter').textContent = `Pregunta ${currentQIndex + 1} de ${TOTAL_QUIZ_QUESTIONS}`;
+        document.getElementById('question-text').textContent = qData.q;
+        
+        const optsContainer = document.getElementById('options-container');
+        optsContainer.innerHTML = "";
+        
+        qData.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => handleAnswer(opt, qData.answer);
+            optsContainer.appendChild(btn);
+        });
+    }
+
+    // Manejar Respuesta
+    function handleAnswer(selected, correct) {
+        if (selected === correct) score++;
+        currentQIndex++;
+        renderQuestion();
+    }
+
+    // Terminar y Enviar Data al Apps Script
+    function finishQuiz() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        
+        document.getElementById('score-text').textContent = `Respuestas correctas: ${score} de ${TOTAL_QUIZ_QUESTIONS}`;
+        
+        // Conversión a nota (AD, A, B, C)
+        let notaAlfabeta = "C";
+        if (score >= 9) notaAlfabeta = "AD";
+        else if (score >= 7) notaAlfabeta = "A";
+        else if (score >= 5) notaAlfabeta = "B";
+        
+        document.getElementById('grade-text').textContent = `Nota Final: ${notaAlfabeta}`;
+
+        // Estructura del JSON que va al Apps Script
+        const payload = {
+            "dni": dni,
+            "curso": "Aritmética Algebra",
+            "notaTarget": "C1", // <--- Cambia "C1" por "L" o el identificador que uses en tu Google Apps Script si creaste una columna L
+            "nuevaNota": notaAlfabeta
+        };
+
+        const statusDiv = document.getElementById('upload-status');
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain' // Fundamental para Google Apps Script
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                statusDiv.textContent = "¡Registro Exitoso! Tu nota fue guardada.";
+                statusDiv.className = "status-msg success";
+            } else {
+                // El Apps script devolverá error si el alumno no existe (DNI equivocado)
+                statusDiv.textContent = "Error: " + data.message; 
+                statusDiv.className = "status-msg error";
+            }
+        })
+        .catch(error => {
+            statusDiv.textContent = "Error de red. Asegúrate de estar conectado a internet.";
+            statusDiv.className = "status-msg error";
+            console.error("Error:", error);
+        });
+    }
+</script>
+
+</body>
+</html>
