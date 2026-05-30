@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE TEST</title>
+    <title>THE TEST - 1º SECUNDARIA</title>
     <style>
         :root { 
             --bg: #f8fafc; 
@@ -83,12 +83,13 @@
 
 <div class="container" id="login-box">
     <h1>THE TEST 🚀</h1>
+    <p>Nivel: 1º Secundaria (Avanzado)</p>
     
     <label>Materia a evaluar:</label>
     <select id="topic-select">
-        <option value="divisibilidad">Aritmética | Divisibilidad</option>
+        <option value="divisibilidad">Aritmética | Divisibilidad (Lema de Cuya)</option>
         <option value="estadistica">Estadística | Medidas de Posición No Central</option>
-        <option value="quimica">Química | Nomenclatura Inorgánica (Dos Competencias)</option>
+        <option value="quimica">Química | Nomenclatura Inorgánica</option>
     </select>
 
     <label>Identificación (DNI):</label>
@@ -102,7 +103,7 @@
     <h3 id="q-text" style="text-align: left; margin-bottom: 1.5rem; line-height: 1.4;"></h3>
     
     <label>Tu respuesta fundamentada:</label>
-    <textarea id="ans-input" placeholder="Escribe tu explicación detallada aquí..."></textarea>
+    <textarea id="ans-input" placeholder="Escribe tu explicación basándote en lo que leíste en el material..."></textarea>
     
     <button id="btn-eval" onclick="verifyAnswer()">Verificar Respuesta</button>
     
@@ -126,42 +127,45 @@
     let index = 0;
     let scoreRecords = [];
 
+    // BANCO DE PREGUNTAS ADAPTADO A 1º DE SECUNDARIA
     const banks = {
         divisibilidad: [
-            {q: "Demuestre conceptualmente: si d|a y d|b, ¿por qué d divide a la combinación lineal (ax + by) para cualquier x, y entero?", exp: "Porque d es factor común de a y b. Si a=dk1 y b=dk2, entonces ax+by = d(k1x + k2y), siendo k1x+k2y un entero."},
-            {q: "Explique la condición necesaria para que el cociente de la suma de potencias (a^n + b^n) entre (a + b) sea un valor entero exacto.", exp: "El exponente 'n' debe ser un número impar. Si n es par, el residuo no es cero."},
-            {q: "Demuestre la propiedad de transitividad: si a|b y b|c, entonces a|c.", exp: "Si b=ak y c=bm, sustituyendo b en c tenemos c=(ak)m = a(km). Como km es entero, a divide a c."},
-            {q: "¿Qué implica matemáticamente que dos números sean primos entre sí (coprimos)? Fundamente basándose en divisores.", exp: "Implica que el Máximo Común Divisor (MCD) entre ambos es igual a 1, no compartiendo factores primos comunes."},
-            {q: "Si a|bc y sabemos que el MCD(a, b) = 1, ¿qué concluye el Lema de Euclides sobre el valor 'c'?", exp: "Concluye necesariamente que 'a' debe dividir al valor 'c'."},
-            {q: "Explique por qué si a|b y b|a, entonces los valores absolutos de a y b deben ser iguales.", exp: "Porque b=ak y a=bm, lo que implica a=akm. Entonces km=1. En el conjunto de los enteros, k y m solo pueden ser 1 o -1."},
-            {q: "Bajo el criterio de divisibilidad de potencias, ¿cuándo un número es divisible por la diferencia a^n - b^n?", exp: "Siempre es divisible por (a-b) para cualquier valor de n que pertenezca a los números naturales."},
-            {q: "Si un número d divide a n, ¿divide d a todos los múltiplos de n? Justifique su respuesta.", exp: "Sí, si n=dk, cualquier múltiplo de n es n*m = (dk)m = d(km), por tanto d divide al múltiplo."},
-            {q: "¿Por qué se afirma que el número cero es divisible por cualquier número entero 'a' (siendo a distinto de cero)?", exp: "Porque existe un entero k=0 tal que se cumple la definición 0 = a * 0."},
-            {q: "Si a divide a b (siendo b un número positivo), ¿cuál es la relación de magnitud obligatoria entre ellos?", exp: "El valor absoluto de 'a' debe ser menor o igual al valor absoluto de 'b' (|a| ≤ |b|)."}
+            {q: "¿Qué significa matemáticamente que un número 'a' divida a un número 'b' (a | b)?", exp: "Significa que existe un número entero 'k' tal que al multiplicar 'a' por 'k' obtenemos 'b' (b = a * k)."},
+            {q: "Si un número divide a 12 y también divide a 20, ¿por qué podemos asegurar que también divide a 32?", exp: "Por la primera propiedad que dice: si 'a' divide a 'b' y 'a' divide a 'c', entonces 'a' divide a la suma (b+c)."},
+            {q: "Si sabemos que 5 divide a 15, y 15 divide a 45, ¿qué propiedad nos permite afirmar que 5 divide a 45?", exp: "La propiedad de transitividad, que indica que si a|b y b|c, entonces obligatoriamente a|c."},
+            {q: "Si sabemos que 2 divide a 6, ¿qué pasa si elevamos ambos a un exponente 'n' (por ejemplo al cubo)? ¿8 dividirá a 216?", exp: "Sí lo dividirá, por la propiedad que establece que si a|b, entonces a^n divide a b^n para todo entero positivo n."},
+            {q: "Si 'a' divide a 'b', y 'b' es un número entero mayor que cero, ¿cuál es la relación de tamaño entre ellos?", exp: "El número 'a' debe ser menor o igual que el número 'b' (a ≤ b)."},
+            {q: "¿Qué significa exactamente que dos números enteros sean 'coprimos' o 'primos entre sí'?", exp: "Significa que el único entero positivo que divide a ambos números (su único divisor en común) es el número 1."},
+            {q: "¿Por qué cualquier número entero 'a' (distinto de cero) puede dividir al 0?", exp: "Porque siempre existe un entero k=0 tal que se cumple la ecuación: 0 = a * 0."},
+            {q: "Si 7 divide a 14, ¿Dividirá también a 14 multiplicado por cualquier otro entero 'k' (14k)? ¿Por qué?", exp: "Sí, por la propiedad 2 que indica que si a|b, entonces 'a' divide a 'k*b' para todo número entero 'k'."},
+            {q: "Si 3 divide a 'x' y 3 divide a 'y', ¿por qué 3 también dividirá a la operación (4x + 5y)?", exp: "Por la propiedad 3: si a divide a dos números, también divide a la suma de los múltiplos de esos números (a | bx + cy)."},
+            {q: "Si multiplicamos ambos lados de una divisibilidad por un número 'c' (ac | bc), ¿qué podemos concluir al simplificar 'c'?", exp: "Podemos concluir directamente que 'a' divide a 'b' (a | b)."}
         ],
         quimica: [
-            {q: "Diferencie un Ozónido de un Óxido común basándose exclusivamente en su estructura aniónica.", exp: "El ozónido contiene el anión complejo (O3)-1, mientras que el óxido común utiliza el anión (O)-2."},
-            {q: "Explique detalladamente cómo se origina un Peroxoácido a partir de la estructura de un oxácido simple.", exp: "Se origina sustituyendo un átomo de oxígeno (-O-) por un grupo peroxo unido por enlace simple (-O-O-)."},
-            {q: "¿Cuál es la característica principal de los Subóxidos en cuanto a sus enlaces químicos y proporción de oxígeno?", exp: "Poseen enlaces metal-metal o cadenas de carbono y una proporción de oxígeno inferior al óxido normal más bajo."},
-            {q: "En el sistema de nomenclatura Stock, ¿qué función cumple exactamente el número romano colocado entre paréntesis?", exp: "Indica el estado de oxidación real del elemento electropositivo cuando posee múltiples valencias."},
-            {q: "Diferencie la nomenclatura de un hidrácido cuando se encuentra en estado gaseoso frente a su estado en disolución acuosa.", exp: "Gaseoso se nombra como 'uro de hidrógeno'; en acuoso usa el prefijo 'Ácido' y el sufijo '-hídrico'."},
-            {q: "Explique el mecanismo de formación de las Sales Haloideas (Sales Binarias) a partir de un hidrácido.", exp: "Se forman mediante la sustitución total de los átomos de hidrógeno de un hidrácido por un metal."},
-            {q: "Describa la composición química de un Superóxido y determine el estado de oxidación aparente del oxígeno en él.", exp: "Es un compuesto binario con el anión (O2)-1; el oxígeno actúa con un estado de oxidación aparente de -1/2."},
-            {q: "¿Qué diferencia fundamental existe entre un ácido Meta-, Piro- y Orto- en términos de su hidratación?", exp: "La diferencia radica en la cantidad de moléculas de agua (1, 2 o 3 respectivamente) añadidas al anhídrido original."},
-            {q: "¿Cuál es la regla de transformación de sufijos para convertir el nombre de un ácido en el nombre de su correspondiente oxisal?", exp: "El sufijo '-oso' del ácido se convierte en '-ito' en la sal, y el sufijo '-ico' se convierte en '-ato'."},
-            {q: "Defina qué es un Calcogenuro y especifique el estado de oxidación con el que actúa el no metal.", exp: "Es una sal binaria derivada de los anfígenos (S, Se, Te) donde el no metal actúa con estado de oxidación -2."}
+            // COMPETENCIA 1 (Básicos y Nomenclatura Estándar)
+            {q: "En la Nomenclatura Clásica o Tradicional, ¿qué sufijos (terminaciones) se usan para un elemento que tiene dos estados de oxidación (como Fe +2 y +3)?", exp: "Se usa el sufijo '-oso' para la valencia menor y el sufijo '-ico' para la valencia mayor."},
+            {q: "¿Cómo se indica el estado de oxidación del elemento metálico en el sistema de Nomenclatura Stock y cuándo se debe omitir?", exp: "Se indica mediante números romanos entre paréntesis. Se omite el número romano si el elemento tiene un único estado de oxidación."},
+            {q: "Escribe la diferencia principal entre nombrar el Fe2O3 en nomenclatura Stock y nombrarlo en nomenclatura Sistemática (IUPAC).", exp: "En Stock es Óxido de hierro (III) usando números romanos, y en sistemática es Trióxido de dihierro, usando prefijos numerales (tri, di)."},
+            {q: "¿Cómo se nombra un ácido hidrácido (ej. HCl) cuando está en estado gaseoso puro, y cómo cambia su nombre en disolución acuosa?", exp: "En estado gaseoso termina en '-uro de hidrógeno' (Cloruro de hidrógeno). En medio acuoso usa la palabra 'Ácido' y termina en '-hídrico' (Ácido clorhídrico)."},
+            {q: "En la formación de Sales Binarias (como el NaCl), ¿qué terminación se le debe poner siempre a la raíz del no metal?", exp: "Se forma usando la raíz del no metal más el sufijo '-uro' seguido del nombre del metal (ejemplo: Clor-uro de sodio)."},
+            // COMPETENCIA 2 (Especiales, Oxácidos y Oxisales)
+            {q: "¿Cuál es el estado de oxidación aparente del oxígeno en un Superóxido (o Hiperóxido) y cuál es su fórmula iónica general?", exp: "En un superóxido, el estado de oxidación aparente del oxígeno es -1/2 y su anión es (O2)-1."},
+            {q: "Los Ozónidos son compuestos altamente inestables y reactivos. ¿Cuál es el anión que los forma y qué valencia aparente tiene el oxígeno ahí?", exp: "Se forman por el anión ozónido (O3)-1, donde el oxígeno actúa con un estado de oxidación fraccionario aparente de -1/3."},
+            {q: "Según la teoría de los Oxácidos Hidratados, ¿qué diferencia existe en la formación de un ácido 'Meta-', 'Piro-' y 'Orto-'?", exp: "Se diferencian por la cantidad de agua: Meta- resulta de sumar 1 molécula de H2O, Piro- suma 2 moléculas de H2O y Orto- suma 3 moléculas de H2O."},
+            {q: "Al convertir un oxácido en una oxisal (sal ternaria), ¿cuál es la regla fundamental para cambiar los sufijos '-oso' e '-ico' del ácido original?", exp: "La regla es que el sufijo '-oso' del ácido cambia por '-ito' en la sal, y el sufijo '-ico' cambia por '-ato'."},
+            {q: "¿Qué es un Peroxoácido y qué cambio se observa en su fórmula química si lo comparamos con su ácido simple original?", exp: "Se forma al sustituir un oxígeno (-O-) por un grupo peroxo (-O-O-), por lo que en su fórmula se observa un oxígeno extra respecto al ácido normal."}
         ],
         estadistica: [
-            {q: "Explique el significado técnico de las variables 'k' y 'n' en la fórmula de posición P = (k*n)/Divisor.", exp: "k representa el número de orden de la medida buscada y n representa el tamaño total de la muestra de datos."},
-            {q: "¿Cuál es el procedimiento inicial obligatorio y crítico antes de aplicar cualquier fórmula de medidas de posición?", exp: "El ordenamiento de los datos de la muestra de forma ascendente (de menor a mayor)."},
-            {q: "Defina matemáticamente qué es un Cuartil y determine en cuántas partes iguales divide a la muestra.", exp: "Es una medida de posición que divide a la muestra en 4 partes iguales, cada una conteniendo el 25% de los datos."},
-            {q: "Si el cálculo de la posición resulta en un valor decimal, ¿cómo se procede para ubicar el dato exacto según la regla?", exp: "Se aplica la regla de redondeo al entero inmediato superior para determinar la ubicación física del dato."},
-            {q: "Diferencie conceptualmente los términos 'Partes' de 'Cortes' en el contexto de la estadística de posición.", exp: "Las partes son los grupos de igual tamaño creados; los cortes son los valores que definen las fronteras (Cortes = Partes - 1)."},
-            {q: "¿Qué interpretación estadística tiene el hecho de que un valor se ubique en el Percentil 70?", exp: "Indica que el 70% de los datos de la muestra son menores o iguales al valor obtenido en esa posición."},
-            {q: "Mencione las características de una escala especial y cite dos ejemplos que no dividan la muestra en partes iguales.", exp: "Son escalas con porcentajes variables. Ejemplos: Estaninos, Esteninos o Escala C."},
-            {q: "¿A qué otras tres medidas de posición equivale exactamente el segundo cuartil (Q2) de una muestra?", exp: "Equivale exactamente a la Mediana, al Decil 5 y al Percentil 50."},
-            {q: "¿En cuántas partes divide un Sextil a la muestra y qué porcentaje de datos representa cada una de esas partes?", exp: "Divide la muestra en 6 partes iguales; cada parte representa aproximadamente el 16.67% de los datos totales."},
-            {q: "Explique la interpretación práctica de un Vigésile 1 (k=1) aplicado a un conjunto de datos.", exp: "Representa que el 5% de la población de datos se encuentra por debajo o es igual al valor hallado en dicha posición."}
+            {q: "Antes de aplicar cualquier fórmula para calcular medidas de posición no central (como cuartiles o deciles), ¿cuál es el paso 1 obligatorio?", exp: "El paso 1 es ordenar los datos de la muestra en orden creciente, es decir, de menor a mayor."},
+            {q: "En la fórmula de posición (Posición = k * n / Divisor), ¿qué representa exactamente la variable 'n' y la variable 'k'?", exp: "'n' representa el total de datos de la muestra y 'k' es el número de la parte específica que se está buscando."},
+            {q: "Regla de los decimales: Si al calcular la fórmula de posición obtienes un resultado decimal (por ejemplo 4.2), ¿qué debes hacer para encontrar tu dato?", exp: "Si el resultado es decimal, la regla indica que se debe usar siempre el número entero siguiente (en este caso, buscar el dato en la posición 5)."},
+            {q: "Según la tabla, ¿en cuántas partes iguales divide a los datos un 'Sextil' y qué número se debe usar como 'Divisor' en su fórmula?", exp: "Divide el conjunto de datos en 6 partes iguales, por lo que su divisor matemático en la fórmula es el número 6."},
+            {q: "Estadísticamente, ¿qué significa que tu nota de un examen se encuentre en el Decil 8 (o Percentil 80)?", exp: "Significa que el 80% de los datos (o de los estudiantes) obtuvieron una nota menor o igual a tu valor obtenido."},
+            {q: "¿Cuál es la diferencia matemática entre las 'Partes' y los 'Cortes' al dividir una muestra de datos? Explícalo con su fórmula sencilla.", exp: "Las partes son los grupos iguales en los que se divide la muestra, mientras que los cortes son las marcas para crear esas partes. La fórmula es Cortes = N - 1."},
+            {q: "A diferencia de los Cuartiles o Deciles, ¿qué característica principal tienen las llamadas 'Escalas Especiales' (como Estaninos o Escala C)?", exp: "La característica de las escalas especiales es que usan porcentajes variables, es decir, NO dividen los datos en partes iguales."},
+            {q: "Si el problema te pide interpretar un Vigésile 1 (donde k=1), ¿qué porcentaje exacto de los datos es menor o igual a ese valor?", exp: "El 5% de los datos es menor o igual al valor obtenido (ya que 1 dividido entre 20 partes da 0.05 o 5%)."},
+            {q: "Observando la tabla, ¿en cuántas partes (N) divide la medida llamada 'Vigésile' a la muestra y cuántos cortes tiene en total?", exp: "El Vigésile divide la muestra en 20 partes iguales (N=20) y por lo tanto tiene 19 cortes (N-1)."},
+            {q: "¿Por qué en la teoría el porcentaje de cada parte se calcula dividiendo 1 entre el número de partes (1/N)? Da un ejemplo con Terciles.", exp: "Porque '1' representa el 100% (el total de los datos). Por ejemplo, en Terciles (N=3), al dividir 1/3 se obtiene 0.3333, que representa el 33.33% por parte."}
         ]
     };
 
@@ -198,7 +202,6 @@
         document.getElementById('ans-input').disabled = false;
         document.getElementById('system-msg').classList.add('hidden');
         
-        // SOLUCIÓN: Desbloquear el botón y regresarle su texto para la nueva pregunta
         const btnEval = document.getElementById('btn-eval');
         btnEval.disabled = false;
         btnEval.innerText = "Verificar Respuesta";
@@ -210,12 +213,12 @@
     async function verifyAnswer() {
         const btn = document.getElementById('btn-eval');
         const ans = document.getElementById('ans-input').value.trim();
-        if(ans.length < 5) return alert("Fundamenta más tu respuesta.");
+        if(ans.length < 5) return alert("Por favor, fundamenta un poco más tu respuesta.");
 
         btn.disabled = true;
-        btn.innerText = "Verificando...";
+        btn.innerText = "Verificando respuesta...";
 
-        const prompt = `Actúa como profesor evaluador. Pregunta: "${config.questions[index].q}". Respuesta alumno: "${ans}". Criterio correcto: "${config.questions[index].exp}". Responde ÚNICAMENTE empezando con "CORRECTA" o "INCORRECTA" nada mas, nada de porque esta preguntas es correcta o incorrecta`;
+        const prompt = `Actúa como profesor evaluador de 1ro de Secundaria. Pregunta: "${config.questions[index].q}". Respuesta alumno: "${ans}". Criterio correcto basado en el PDF: "${config.questions[index].exp}". Responde ÚNICAMENTE empezando con "CORRECTA" o "INCORRECTA" nada mas, nada de explicaciones de por qué esta pregunta es correcta o incorrecta.`;
 
         try {
             const res = await fetch(ENDPOINT, { 
@@ -241,7 +244,7 @@
             document.getElementById('btn-next').classList.remove('hidden');
             index++;
         } catch (e) { 
-            alert("Error: " + e.message); 
+            alert("Error de conexión: " + e.message); 
             btn.disabled = false;
             btn.innerText = "Verificar Respuesta";
         }
@@ -273,20 +276,20 @@
             let g1 = getGradeLetter(c1Correct, 5);
             let g2 = getGradeLetter(c2Correct, 5);
             htmlResults = `
-                <div class="result-item">Comp. 1: ${c1Correct}/5 -> <b>${g1}</b></div>
-                <div class="result-item">Comp. 2: ${c2Correct}/5 -> <b>${g2}</b></div>`;
+                <div class="result-item">Competencia 1: ${c1Correct}/5 aciertos -> <b>${g1}</b></div>
+                <div class="result-item">Competencia 2: ${c2Correct}/5 aciertos -> <b>${g2}</b></div>`;
             fetches.push(sendNote(config.targetCols[0], g1));
             fetches.push(sendNote(config.targetCols[1], g2));
         }
 
         document.getElementById('res-detail').innerHTML = htmlResults;
         const statusDiv = document.getElementById('save-status');
-        statusDiv.innerText = "Registrando notas...";
+        statusDiv.innerText = "Registrando notas en el sistema...";
 
         try {
             const results = await Promise.all(fetches);
-            if(results.every(r => r.status === "success")) statusDiv.innerHTML = "<span style='color:var(--success)'>Notas guardadas.</span>";
-            else statusDiv.innerHTML = "<span style='color:var(--error)'>Error.</span>";
+            if(results.every(r => r.status === "success")) statusDiv.innerHTML = "<span style='color:var(--success)'>Guardado!</span>";
+            else statusDiv.innerHTML = "<span style='color:var(--error)'>Errores.</span>";
         } catch (e) { statusDiv.innerText = "Error de conexión final."; }
     }
 
