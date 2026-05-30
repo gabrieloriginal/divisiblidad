@@ -338,7 +338,7 @@
                 // Verificar si todos respondieron "success"
                 let allSuccess = results.every(r => r.status === "success");
                 if (allSuccess) {
-                    statusDiv.textContent = "¡Registro Exitoso! Tus notas fueron guardadas.";
+                    statusDiv.textContent = "Tus notas fueron guardadas.";
                     statusDiv.className = "status-msg success";
                 } else {
                     // Si el DNI falló, mostraremos el error devuelto
